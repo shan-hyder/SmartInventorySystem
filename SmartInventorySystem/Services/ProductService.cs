@@ -10,6 +10,7 @@ namespace SmartInventorySystem.Services
 {
     public class ProductService:IProductService
     {
+
         private readonly AppDbContext _context;
 
         public ProductService(AppDbContext context)
@@ -43,6 +44,7 @@ namespace SmartInventorySystem.Services
         }
     public async Task<List<ProductResponseDTO>>GetAll()
         {
+
             var products=await _context.Products.Include(p=>p.Category).Select(p=>new ProductResponseDTO
             {
                 Id=p.Id,

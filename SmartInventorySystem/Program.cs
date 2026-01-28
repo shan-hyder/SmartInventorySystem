@@ -2,6 +2,7 @@ using SmartInventorySystem.Data;
 using Microsoft.EntityFrameworkCore;
 using SmartInventorySystem.Interfaces;
 using SmartInventorySystem.Services;
+using SmartInventorySystem.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +28,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseAuthorization();
 
