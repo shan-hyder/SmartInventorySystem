@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using SmartInventorySystem.Interfaces;
 using SmartInventorySystem.Services;
 using SmartInventorySystem.Middleware;
+using Microsoft.AspNetCore.Identity;
+using SmartInventorySystem.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +16,9 @@ builder.Services.AddControllers();
 
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

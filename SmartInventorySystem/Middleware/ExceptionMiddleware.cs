@@ -1,4 +1,5 @@
-﻿    using System.Net;
+﻿using SmartInventorySystem.Exceptions;
+using System.Net;
     using System.Text.Json;
 
     namespace SmartInventorySystem.Middleware
@@ -30,9 +31,14 @@
             private static Task HandleExceptionAsync(HttpContext context, Exception exception)
             {
                 context.Response.ContentType = "application/json";
-                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                context.Response.StatusCode = exception switch
+                {
+                NotFoundException => (int)HttpStatusCode.NotFound,
+                BadRequestException => (int)HttpStatusCode.BadRequest,
+                _ => (int)HttpStatusCode.InternalServerError
+                };
 
-                var response = new
+            var response = new
                 {
                     statusCode = context.Response.StatusCode,
                     message = "An unexpected error occurred",
