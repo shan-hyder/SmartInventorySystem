@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SmartInventorySystem.DTOs;
 using SmartInventorySystem.Interfaces;
 using SmartInventorySystem.Services;
 
 namespace SmartInventorySystem.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class ProductsController : ControllerBase
@@ -25,6 +27,7 @@ namespace SmartInventorySystem.Controllers
             }
             return Ok(createdProduct);
         }
+        [Authorize(Roles = "Admin,User")]
         [HttpGet]
         public async Task<IActionResult>GetAllProducts()
         {
@@ -35,6 +38,7 @@ namespace SmartInventorySystem.Controllers
             }
             return Ok(products);
         }
+        [Authorize(Roles ="Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
@@ -45,6 +49,7 @@ namespace SmartInventorySystem.Controllers
             }
             return Ok(200);
         }
+        [Authorize(Roles ="Admin,User")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProductById(int id)
         {
@@ -55,6 +60,7 @@ namespace SmartInventorySystem.Controllers
             }
             return Ok(product);
         }
+        [Authorize(Roles ="Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProduct(int id, [FromBody] ProductUpdateDTO dto)
         {

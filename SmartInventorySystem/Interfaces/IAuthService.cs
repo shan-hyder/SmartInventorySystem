@@ -5,6 +5,6 @@ namespace SmartInventorySystem.Interfaces
     public interface IAuthService
     {
         public Task<AuthResponseDTO> UserRegisterAsync(RegisterUserDTO dto);
-        public Task<string> UserLoginAsync(LoginDTO dto);
+        public Task<AuthResponseDTO> UserLoginAsync(LoginDTO dto);
     }
 }

@@ -39,19 +39,12 @@ namespace SmartInventorySystem.Controllers
         public async Task<IActionResult> LoginUser([FromBody] LoginDTO dto)
         {
             var result = await _authService.UserLoginAsync(dto);
-            if (result== "Login Successful")
+            if (result.success==true)
             {
-                return Ok(new AuthResponseDTO
-                {
-                    success = true,
-                    message = result
-                });
+                return Ok(result);
+               
             }
-            return BadRequest(new
-            {
-                success = false,
-                message = result
-            });
+            return Unauthorized(result);
         }
     }
 }

@@ -11,10 +11,12 @@ namespace SmartInventorySystem.Services
     {
         private readonly AppDbContext _context;
         private readonly IPasswordHasher<User> _passwordHasher;
-        public AuthService(AppDbContext context,IPasswordHasher<User> passwordHasher)
+        private readonly ITokenService _tokenservice;
+        public AuthService(AppDbContext context,IPasswordHasher<User> passwordHasher,ITokenService tokenService)
         {
             _context = context;
             _passwordHasher = passwordHasher;
+            _tokenservice = tokenService;
         }
         public async Task<AuthResponseDTO> UserRegisterAsync(RegisterUserDTO dto)
         {
@@ -31,6 +33,7 @@ namespace SmartInventorySystem.Services
             {
                 Name = dto.Name,
                 Email = dto.Email,
+                Role=dto.Role,
                 IsActive=true
             };
             user.PasswordHash = _passwordHasher.HashPassword(user, dto.Password);
@@ -45,7 +48,7 @@ namespace SmartInventorySystem.Services
                 success = true
             };
         }
-        public async Task<string> UserLoginAsync(LoginDTO dto)
+        public async Task<AuthResponseDTO> UserLoginAsync(LoginDTO dto)
         {
             var user = await _context.Users.FirstOrDefaultAsync(s => s.Email == dto.Email && s.IsActive == true);
             if(user!=null)
@@ -53,11 +56,24 @@ namespace SmartInventorySystem.Services
                 var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
                 if(result==PasswordVerificationResult.Success)
                 {
-                    return "Login Successful";
+                    return new AuthResponseDTO
+                    {
+                        success=true,
+                        message="Login Successfull",
+                        token=_tokenservice.GenerateToken(user)
+                    };
                 }
-                return "Invalid Password";
+                return new AuthResponseDTO
+                {
+                    success = false,
+                    message = "Invalid Credentials"
+                };
             }
-            return "User Not Found";
+            return new AuthResponseDTO()
+            {
+                success=false,
+                message="User Not Found"
+            };
         }
     }
 }

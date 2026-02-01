@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
 using SmartInventorySystem.DTOs;
 using SmartInventorySystem.Interfaces;
 
 namespace SmartInventorySystem.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class CategoriesController : ControllerBase
@@ -14,17 +16,19 @@ namespace SmartInventorySystem.Controllers
         {
             _categoryService = categoryService;
         }
-
+        [Authorize(Roles ="Admin")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CategoryCreateDTO dto)
         {
             return Ok(await _categoryService.CreateCategory(dto));
         }
+        [Authorize(Roles ="Admin,User")]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             return Ok(await _categoryService.GetAllCategories());
         }
+        [Authorize(Roles = "Admin,User")]
         [HttpGet("{id}")]
         public async Task<IActionResult>GetCategoryById(int id)
         {
@@ -35,6 +39,7 @@ namespace SmartInventorySystem.Controllers
             }
             return Ok(category);
         }
+        [Authorize(Roles = "Admin")]
         [HttpDelete]
         public async Task<IActionResult> DeleteCategory(int id)
         {
@@ -45,6 +50,7 @@ namespace SmartInventorySystem.Controllers
             }
             return Ok("Category soft deleted successfully");
         }
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCategory(int id, [FromBody] UpdateCategoryDTO dto)
         {
