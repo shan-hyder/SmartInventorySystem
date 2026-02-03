@@ -23,6 +23,7 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<ITokenService,JWTTokenService>();
+builder.Services.AddScoped<IStockTransactionService, StockTransactionService>();
 
 builder.Services.AddAuthentication(options =>
 {

@@ -17,6 +17,7 @@ namespace SmartInventorySystem.Controllers
         {
             _productService = service;
         }
+        [Authorize(Roles ="Admin")]
         [HttpPost]
         public async Task<IActionResult> CreateProduct([FromBody] ProductCreateDTO dto)
         {

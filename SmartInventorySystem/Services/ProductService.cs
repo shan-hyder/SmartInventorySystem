@@ -4,6 +4,7 @@ using Microsoft.Identity.Client;
 using SmartInventorySystem.Data;
 using SmartInventorySystem.DTOs;
 using SmartInventorySystem.Entities;
+using SmartInventorySystem.Exceptions;
 using SmartInventorySystem.Interfaces;
 
 namespace SmartInventorySystem.Services
@@ -24,8 +25,8 @@ namespace SmartInventorySystem.Services
                 Name = dto.Name,
                 Price = dto.Price,
                 Description = dto.Description,
-                StockQuantity = dto.StockQuantity,
                 CategoryId = dto.CategoryId,
+                LowStockThreshold = dto.LowStockThreshold
             };
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
@@ -35,7 +36,6 @@ namespace SmartInventorySystem.Services
                 Name = product.Name,
                 Description = product.Description,
                 Price = product.Price,
-                StockQuantity = product.StockQuantity,
                 CategoryId = product.CategoryId,
                 CategoryName = product.Category.Name
 
@@ -51,20 +51,20 @@ namespace SmartInventorySystem.Services
                 Name=p.Name,
                 Description=p.Description,
                 Price=p.Price,
-                StockQuantity=p.StockQuantity,
                 CategoryId=p.CategoryId,
-                CategoryName=p.Category.Name
+                CategoryName=p.Category.Name,
+                
             }).ToListAsync();
             return products;
 
         }
         public  async Task<ProductResponseDTO>GetById(int id)
         {
-            var product = await _context.Products.Include(p => p.Category).FirstOrDefaultAsync(p => p.Id==id);
+            var product = await _context.Products.Include(p => p.Category).Include(p=>p.Stock).FirstOrDefaultAsync(p => p.Id==id);
 
             if(product==null)
             {
-                return null;
+                throw new BusinessException("Product Doesnt exist");
             }
             return new ProductResponseDTO
             {
@@ -72,8 +72,9 @@ namespace SmartInventorySystem.Services
                 Name = product.Name,
                 Description = product.Description,
                 Price = product.Price,
-                StockQuantity = product.StockQuantity,
-                CategoryName = product.Category.Name
+                CategoryName = product.Category.Name,
+                StockQuantity = product.Stock != null ? product.Stock.Quantity : 0
+
             };
         }
         public async Task<bool>DeleteById(int id)
@@ -92,12 +93,11 @@ namespace SmartInventorySystem.Services
             var product = await _context.Products.Include(p=>p.Category).FirstOrDefaultAsync(p => p.Id == id && p.IsActive);
             if (product==null)
             {
-                return null;
+                throw new BusinessException("Product Doesnt Exist");
             }
             product.Name = dto.Name;
             product.Description = dto.Description;
             product.Price = dto.Price;
-            product.StockQuantity = dto.StockQuantity;
             product.UpdatedAt = DateTime.UtcNow;
             await _context.SaveChangesAsync();
             return new ProductResponseDTO
@@ -106,7 +106,7 @@ namespace SmartInventorySystem.Services
                 Name = product.Name,
                 Description = product.Description,
                 Price = product.Price,
-                StockQuantity = product.StockQuantity,
+
                 CategoryId = product.CategoryId,
                 CategoryName = product.Category.Name
             };

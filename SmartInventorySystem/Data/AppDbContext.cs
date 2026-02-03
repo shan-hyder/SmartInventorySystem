@@ -10,6 +10,8 @@ namespace SmartInventorySystem.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Stock> Stocks { get; set; }
+        public DbSet<StockTransaction> StockTransactions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -37,8 +39,19 @@ namespace SmartInventorySystem.Data
                 entity.HasOne(p => p.Category).WithMany(c => c.Products)
                 .HasForeignKey(p => p.CategoryId).OnDelete(DeleteBehavior.Restrict);
 
+                entity.HasOne(p => p.Stock).WithOne(s => s.Product).
+                HasForeignKey<Stock>(s => s.ProductId)
+                .IsRequired(false);
+
                 entity.HasQueryFilter(p => p.IsActive);
 
+            });
+            //For StockTransaction
+            modelBuilder.Entity<StockTransaction>(entity =>
+            {
+                entity.HasOne(s => s.Product)
+                .WithMany().HasForeignKey
+                (s => s.ProductId).IsRequired(false);
             });
 
 

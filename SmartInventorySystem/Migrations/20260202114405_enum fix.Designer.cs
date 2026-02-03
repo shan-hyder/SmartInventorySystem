@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmartInventorySystem.Data;
 
@@ -11,9 +12,11 @@ using SmartInventorySystem.Data;
 namespace SmartInventorySystem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260202114405_enum fix")]
+    partial class enumfix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,9 +69,6 @@ namespace SmartInventorySystem.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("LowStockThreshold")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -76,6 +76,9 @@ namespace SmartInventorySystem.Migrations
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("StockQuantity")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -98,7 +101,7 @@ namespace SmartInventorySystem.Migrations
                     b.Property<DateTime>("LastUpdate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("ProductId")
+                    b.Property<int>("Productid")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
@@ -106,9 +109,7 @@ namespace SmartInventorySystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductId")
-                        .IsUnique()
-                        .HasFilter("[ProductId] IS NOT NULL");
+                    b.HasIndex("Productid");
 
                     b.ToTable("Stocks");
                 });
@@ -193,8 +194,8 @@ namespace SmartInventorySystem.Migrations
             modelBuilder.Entity("SmartInventorySystem.Entities.Stock", b =>
                 {
                     b.HasOne("SmartInventorySystem.Entities.Product", "Product")
-                        .WithOne("Stock")
-                        .HasForeignKey("SmartInventorySystem.Entities.Stock", "ProductId");
+                        .WithMany()
+                        .HasForeignKey("Productid");
 
                     b.Navigation("Product");
                 });
@@ -211,11 +212,6 @@ namespace SmartInventorySystem.Migrations
             modelBuilder.Entity("SmartInventorySystem.Entities.Category", b =>
                 {
                     b.Navigation("Products");
-                });
-
-            modelBuilder.Entity("SmartInventorySystem.Entities.Product", b =>
-                {
-                    b.Navigation("Stock");
                 });
 #pragma warning restore 612, 618
         }

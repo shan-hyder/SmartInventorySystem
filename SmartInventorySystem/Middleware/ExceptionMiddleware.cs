@@ -35,7 +35,8 @@ using System.Net;
                 {
                 NotFoundException => (int)HttpStatusCode.NotFound,
                 BadRequestException => (int)HttpStatusCode.BadRequest,
-                _ => (int)HttpStatusCode.InternalServerError
+                BusinessException => (int)HttpStatusCode.BadRequest,
+                    _ => (int)HttpStatusCode.InternalServerError
                 };
 
             var response = new
